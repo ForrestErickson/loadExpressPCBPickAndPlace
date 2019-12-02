@@ -10,6 +10,7 @@
 * Prints to console the F8 and F9 lines as required for MyData.
 * Prepends the lines from an example MyData PCB file for F1 to F6.
 * Add output to file.
+* Remove left and right mouse actions
 */
 
 //The tables to create
@@ -99,19 +100,8 @@ void draw(){
 //Mouse press to modify table
 void mousePressed() {
     if (mouseButton == LEFT){
-      println("Lets add a row.");
-      println(pickNPlacetable.getRowCount());  // Prints 1
-      TableRow newRow = pickNPlacetable.addRow();
-      newRow.setString("name", "Lion");
-      newRow.setString("type", "Mammal");
-      println(pickNPlacetable.getRowCount());  // Prints 1
-      
     }    
     else if (mouseButton == RIGHT ){
-      println(pickNPlacetable.getColumnCount());  //Prints starting column count
-      println("Lets add a column called 'Favorite food'.");
-      pickNPlacetable.addColumn("Favorite food");
-      println(pickNPlacetable.getColumnCount());  // Prints updated column count
     }
     else {
       println("Good bye.");
