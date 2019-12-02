@@ -8,6 +8,7 @@
 * Remove magic strings for file names.
 * Look up Part Number (Order#) from Schematic by RefDes in Pick and Place. 
 * Prints to console the F8 and F9 lines as required for MyData.
+* Prepends the lines from an example MyData PCB file for F1 to F6.
 */
 
 //The tables to create
@@ -19,6 +20,7 @@ final String pickNPlaceFileFixed = "Pick-and-place for WUKT8747EFixRef.csv";  //
 //final String pickNPlaceFile = "Pick-and-place for WUKT8747E.csv";
 String pickNPlaceFile = pickNPlaceFileFixed;
 final String schematicBOMFile = "Coincidence Daughter20191125_1617.tsv"; // From Express PCB schematicBOM RefDes get Order# (Part Number), field 1 get field 3
+final String pickAndPlacePCBHeaderF1toF6File = "My100PCBF1toF6.txt"; // Lines required by My100 for PCB file
 
 //Fixed My100 fields
 int group = 0;                         //Not useing Groups
@@ -26,45 +28,54 @@ String mountSkip = "N";                //Not useing mountSkip
 final String glue = "N";                     //We do not have glue equipment
 String PartNumBOM = "foo";
 
+//Scaling factors
+final int xFactor = 1000; // Convert  inches to mills
+final int yFactor = 1000; // Convert  inches to mills
+final int aFactor = 1000; // Convert  degrees to mills of degree
+
 void setup() {
   size(400,400);
-  
+  //Load text for lines F1 to F6 of Mydata PCB file.
+  String[] headerPCB = loadStrings(pickAndPlacePCBHeaderF1toF6File);
   //Load the pick and place and the BOM into tables 
   pickNPlacetable = loadTable(pickNPlaceFileFixed, "header");
-  println(pickNPlacetable.getRowCount() + " total rows in Pick and Place");
+//  println(pickNPlacetable.getRowCount() + " total rows in Pick and Place");
   schematicBOMtable = loadTable(schematicBOMFile, "header");
-  println(schematicBOMtable.getRowCount() + " total rows in BOM");
+//  println(schematicBOMtable.getRowCount() + " total rows in BOM");
   
-  println("Let's print it out F8 abd F9 lines in MYDATA MY100 format.\n\n"); 
+  for (int i = 0 ; i < headerPCB.length; i++) {
+    println(headerPCB[i]);
+  }  
+  println("#Let's print it out F8 abd F9 lines in MYDATA MY100 format."); 
+  println("#F8 template  x  y  angle  group  mount  glue  Spectrum Techniques PN  \r\n#F9  Location(Refdes)"); 
+  
   //Ref,Part Name,X,Y,Rotation,Side
   for (TableRow row : pickNPlacetable.rows()) {
     String refDes = row.getString("Ref");
 //    String partName = row.getString("Part Name");    //Not used in MyData output.
-    float x = row.getFloat("X");
-    float y = row.getFloat("Y");
-    float rotation = row.getFloat("Rotation");
+    float f_x = row.getFloat("X");
+    float f_y = row.getFloat("Y");
+    float f_rotation = row.getFloat("Rotation");
+    //Scale and make interger
+    int x = int(f_x*xFactor);
+    int y = int(f_y*yFactor);
+    int rotation = int(f_rotation*aFactor);
     
     //For Ref find the schematic part number. ie, schematicBOMFile third field of (refDes)
-    // Ref  Value  PartNumber
-    
-    for (TableRow bomRow : schematicBOMtable.rows()){
-      
+    // Ref  Value  PartNumber    
+    for (TableRow bomRow : schematicBOMtable.rows()){      
       String refBOM = bomRow.getString("Ref");
       String valBOM = bomRow.getString("Value");
       String pnBOM = bomRow.getString("PartNumber");      
-
       String[] m1 = match(refDes, bomRow.getString("Ref"));
       if (m1 != null){    
-//      if (refDes == bomRow.getString("Ref")){
         PartNumBOM = pnBOM;
-//        println("Got one! Ref is: " + refDes + " and PartNumBOM is: " + PartNumBOM + " and pnBOM is: " + pnBOM);
         //Output format, F8 tab x, tab y, tab angle, tab group, tab mount, tab glue, tab PartNum, CR LF, F9 tab, Ref 
-        println("F8\t"+ x + "\t"+y + "\t" + rotation + "\t" + group + "\t" + mountSkip + "\t" + glue + "\t" + PartNumBOM + "\r\nF9 " + refDes);
+        println("F8\t"+ x + "\t"+ y + "\t" + rotation + "\t" + group + "\t" + mountSkip + "\t" + glue + "\t" + PartNumBOM + "\r\nF9 " + refDes);
       }else {
         PartNumBOM = "bar";
       }//Else
     }//bomRow 
-
   }//Print out table
 }//Setup
 
