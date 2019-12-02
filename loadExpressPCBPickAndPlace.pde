@@ -1,28 +1,39 @@
-/** loadTable
-*From: https://processing.org/reference/loadTable_.html
+/** loadExpressPCBPickAndPlace
+*Transmongraphied from example at: https://processing.org/reference/loadTable_.html
 *Update for mouse to add row or add column or exit."
+* Update to open pick and place file from ExpressPCB for Coincidence Daughter20191125_1617
+* Updated to read first row of table. See: https://www.youtube.com/watch?v=woaR-CJEwqc at about 8:00 time.
 */
-
-
-// The following short CSV file called "mammals.csv" is parsed
-// in the code below. It must be in the project's "data" folder.
-//
-// id,species,name
-// 0,Capra hircus,Goat
-// 1,Panthera pardus,Leopard
-// 2,Equus zebra,Zebra
 
 Table table;
 
 void setup() {
   size(400,400);
-  table = loadTable("mammals.csv", "header");
+
+  table = loadTable("Pick-and-place for WUKT8747EFixRef.csv", "header");
   println(table.getRowCount() + " total rows in table");
+  
+  println("Lets print it out in MYDATA MY100 format.\n\n"); 
+  //Ref,Part Name,X,Y,Rotation,Side
   for (TableRow row : table.rows()) {
-    int id = row.getInt("id");
-    String species = row.getString("species");
-    String name = row.getString("name");
-    println(name + " (" + species + ") has an ID of " + id);
+    String refDes = row.getString("Ref");
+    String partName = row.getString("Part Name");
+    float x = row.getFloat("X");
+    float y = row.getFloat("Y");
+    float rotation = row.getFloat("Rotation");
+    
+    //Other My100 fields
+    int group = 0;                         //Not useing Groups
+    String mountSkip = "N";                //Not useing Groups
+    String glue = "N";                     //We do not have glue equipment
+    String PartNumBOM = "foo";
+   
+    
+//    println(partName + " (" + refDes + ") has an ID" );
+//    println("F8\t"+ partName + "\t"+ refDes);
+
+    //Output format, F8 tab x, tab y, tab angle, tab group, tab mount, tab glue, tab PartNum, CR LF, F9 tab, Ref 
+    println("F8\t"+ x + "\t"+y + "\t" + rotation + "\t" + group + "\t" + mountSkip + "\t" + glue + "\t" + PartNumBOM + "\r\nF9 " + refDes);
   }//Print out table
 }//Setup
 
