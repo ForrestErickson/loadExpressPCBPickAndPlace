@@ -9,6 +9,7 @@
 * Look up Part Number (Order#) from Schematic by RefDes in Pick and Place. 
 * Prints to console the F8 and F9 lines as required for MyData.
 * Prepends the lines from an example MyData PCB file for F1 to F6.
+* Add output to file.
 */
 
 //The tables to create
@@ -45,6 +46,7 @@ void setup() {
   
   for (int i = 0 ; i < headerPCB.length; i++) {
     println(headerPCB[i]);
+    appendTextToFile(myLogFileName, headerPCB[i]);
   }  
   println("#Let's print it out F8 abd F9 lines in MYDATA MY100 format."); 
   println("#F8 template  x  y  angle  group  mount  glue  Spectrum Techniques PN  \r\n#F9  Location(Refdes)"); 
@@ -70,8 +72,11 @@ void setup() {
       String[] m1 = match(refDes, bomRow.getString("Ref"));
       if (m1 != null){    
         PartNumBOM = pnBOM;
-        //Output format, F8 tab x, tab y, tab angle, tab group, tab mount, tab glue, tab PartNum, CR LF, F9 tab, Ref 
-        println("F8\t"+ x + "\t"+ y + "\t" + rotation + "\t" + group + "\t" + mountSkip + "\t" + glue + "\t" + PartNumBOM + "\r\nF9 " + refDes);
+        //Output format, F8 tab x, tab y, tab angle, tab group, tab mount, tab glue, tab PartNum, CR LF, F9 tab, Ref
+        String outText = "F8\t"+ x + "\t"+ y + "\t" + rotation + "\t" + group + "\t" + mountSkip + "\t" + glue + "\t" + PartNumBOM + "\r\nF9 " + refDes;
+//        println("F8\t"+ x + "\t"+ y + "\t" + rotation + "\t" + group + "\t" + mountSkip + "\t" + glue + "\t" + PartNumBOM + "\r\nF9 " + refDes);
+        println(outText);
+        appendTextToFile(myLogFileName, outText);
       }else {
         PartNumBOM = "bar";
       }//Else
