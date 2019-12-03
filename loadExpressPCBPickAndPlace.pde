@@ -41,7 +41,7 @@ final int aFactor = 1000; // Convert  degrees to mills of degree
 
 //Offset 
 final int xOffset = 0; // 
-final int yOffset = 2500000; // Set for board height
+final int yOffset = 63500; // Set for board height  2.5 inch * 25.4 * 1000
 
 
 void setup() {
@@ -89,8 +89,8 @@ void setup() {
     int rotation = int(f_rotation*aFactor);
     
     //Offset origin. My100 orgin is lower left. Increase Y is up.
-//    x = x - xOffset ;
-//    y = -(y - yOffset);    
+    x = x - xOffset ;
+    y = -(y - yOffset);    
     
     //For Ref find the schematic part number. ie, schematicBOMFile third field of (refDes)
     // Ref  Value  PartNumber    
