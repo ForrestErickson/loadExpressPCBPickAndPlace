@@ -21,10 +21,11 @@ Table pickNPlacetable;                //Open the ExpressPCB pick and place file 
 Table schematicBOMtable;              //Open the schematicBOM file with the part number in the "order#" field for this PCB.
 
 //The files you need
-//final String pickNPlaceFile = "Pick-and-place for WUKT8747E.csv";
-final String pickNPlaceFileFixed = "Pick-and-place for WUKT8747EFixRef.csv";  //Same as above but change C0001 to C1 and so on.
-String pickNPlaceFile = pickNPlaceFileFixed;
+final String pickNPlaceFile = "Pick-and-place for WUKT8747E.csv";
+//final String pickNPlaceFileFixed = "Pick-and-place for WUKT8747EFixRef.csv";  //Same as above but change C0001 to C1 and so on.
+//String pickNPlaceFile = pickNPlaceFileFixed;
 final String schematicBOMFile = "Coincidence Daughter20191125_1617.tsv"; // From Express PCB schematicBOM RefDes get Order# (Part Number), field 1 get field 3
+final String pickAndPlacelayoutPanelHeader = "My100_LAYOUT_CD.txt"; // Layout and Panel data required by My100 for project.
 final String pickAndPlacePCBHeaderF1toF6File = "My100PCBF1toF6.txt"; // Lines required by My100 for PCB file
 
 //Fixed My100 fields
@@ -38,16 +39,30 @@ final int xFactor = 1000; // Convert  inches to mills
 final int yFactor = 1000; // Convert  inches to mills
 final int aFactor = 1000; // Convert  degrees to mills of degree
 
+//Offset 
+final int xOffset = 0; // 
+final int yOffset = 2500000; // Set for board height
+
+
 void setup() {
   size(400,400);
+  //Load text for Layout and Panel of Mydata PCB file.
+  String[] headerLayoutPanel = loadStrings(pickAndPlacelayoutPanelHeader);
+  
   //Load text for lines F1 to F6 of Mydata PCB file.
   String[] headerPCB = loadStrings(pickAndPlacePCBHeaderF1toF6File);
   //Load the pick and place and the BOM into tables 
-  pickNPlacetable = loadTable(pickNPlaceFileFixed, "header");
+  pickNPlacetable = loadTable(pickNPlaceFile, "header");
 //  println(pickNPlacetable.getRowCount() + " total rows in Pick and Place");
   schematicBOMtable = loadTable(schematicBOMFile, "header");
 //  println(schematicBOMtable.getRowCount() + " total rows in BOM");
 
+  /*Begin writing to file. Start with the Layout and Panel lines required for MY100 Layout and Panel*/ 
+  for (int i = 0 ; i < headerLayoutPanel.length; i++) {
+    println(headerLayoutPanel[i]);
+    appendTextToFile(myLogFileName, headerLayoutPanel[i]);
+  }
+  
   /*Begin writing to file. Start with the lines required for MY100 PCB*/ 
   for (int i = 0 ; i < headerPCB.length; i++) {
     println(headerPCB[i]);
@@ -73,14 +88,23 @@ void setup() {
     int y = int(f_y*yFactor);
     int rotation = int(f_rotation*aFactor);
     
+    //Offset origin. My100 orgin is lower left. Increase Y is up.
+//    x = x - xOffset ;
+//    y = -(y - yOffset);    
+    
     //For Ref find the schematic part number. ie, schematicBOMFile third field of (refDes)
     // Ref  Value  PartNumber    
     for (TableRow bomRow : schematicBOMtable.rows()){      
       String refBOM = bomRow.getString("Ref");
       String valBOM = bomRow.getString("Value");
       String pnBOM = bomRow.getString("PartNumber");      //ExpressPCB Schematic BOM Order# field.
-      String[] m1 = match(refDes, bomRow.getString("Ref"));
-      if (m1 != null){    
+//      String[] m1 = matchAll(refBOM,refDes);
+      String[] m1 = match(refDes, refBOM);
+      int refDesLength = refDes.length();
+      int refBOMLength = refBOM.length();
+//      String[] m1 = match(refDes, bomRow.getString("Ref"));
+//      String[] m1 = match(bomRow.getString("Ref"), refDes);
+      if ((m1 != null) && (refDesLength == refBOMLength)){    
         PartNumBOM = pnBOM;
         //Output format, F8 tab x, tab y, tab angle, tab group, tab mount, tab glue, tab PartNum, CR LF, F9 tab, Ref
         String outText = "F8\t"+ x + "\t"+ y + "\t" + rotation + "\t" + group + "\t" + mountSkip + "\t" + glue + "\t" + PartNumBOM + "\r\nF9 " + refDes;
