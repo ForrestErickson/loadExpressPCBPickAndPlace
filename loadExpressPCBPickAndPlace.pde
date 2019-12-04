@@ -98,8 +98,9 @@ void setup() {
     //Scale and make interger
     int x = int(f_x*xFactor);
     int y = int(f_y*yFactor);
-    int rotation = int(f_rotation*aFactor);
-    
+    int rotation = int(f_rotation)+90;        //Lets rotate all components +90 degrees to get the C and Rs correct.
+    rotation = (rotation % 360) * aFactor ;    
+  
     //Offset origin. My100 orgin is lower left. Increase Y is up.
     x = x - xOffset ;
     y = -(y - yOffset);    
