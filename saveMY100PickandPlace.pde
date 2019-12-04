@@ -35,6 +35,7 @@ void appendTextToFile(String filename, String text) {
  * Creates a new file including all subfolders
  */
 void createFile(File f){
+  println("Creating new file: " + myLogFileName);
   File parentDir = f.getParentFile();
   try{
     parentDir.mkdirs(); 

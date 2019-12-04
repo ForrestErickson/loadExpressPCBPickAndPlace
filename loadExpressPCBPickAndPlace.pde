@@ -13,7 +13,11 @@
 * Prepends the lines from an example MyData PCB file for F1 to F6.
 * Add output to file.
 * Remove left and right mouse actions.
-* 20191203 
+* 20191203
+* Eliminate duplicate C10 by test for equal lenght ref des before doing the look up. Make offset origin and flip Y direction. Not yet correct.
+* Set board height in mm. Mirror Y direction.
+* 20191204 
+* Add prompt and end of file generation. Change text in draw(). Make comments more accurate.
 */
 
 //The tables to create
@@ -31,15 +35,17 @@ final String pickAndPlacePCBHeaderF1toF6File = "My100PCBF1toF6.txt"; // Lines re
 //Fixed My100 fields
 int group = 0;                         //Not useing Groups
 String mountSkip = "N";                //Not useing mountSkip
-final String glue = "N";                     //We do not have glue equipment
+final String glue = "N";               //We do not have glue equipment
 String PartNumBOM = "foo";
 
 //Scaling factors
-final int xFactor = 1000; // Convert  inches to mills
+final int xFactor = 1000; // Convert  inches to mills or mm to um
 final int yFactor = 1000; // Convert  inches to mills
 final int aFactor = 1000; // Convert  degrees to mills of degree
 
 //Offset 
+//The ExpressPCB orgin is upper left of board. My100 origin is lower left
+//The xOffset is therefor zero but the My100 origin must be offset by the board height.
 final int xOffset = 0; // 
 final int yOffset = 63500; // Set for board height  2.5 inch * 25.4 * 1000
 
@@ -47,13 +53,14 @@ final int yOffset = 63500; // Set for board height  2.5 inch * 25.4 * 1000
 void setup() {
   size(400,400);
   //Load text for Layout and Panel of Mydata PCB file.
-  String[] headerLayoutPanel = loadStrings(pickAndPlacelayoutPanelHeader);
-  
+  String[] headerLayoutPanel = loadStrings(pickAndPlacelayoutPanelHeader);  
   //Load text for lines F1 to F6 of Mydata PCB file.
   String[] headerPCB = loadStrings(pickAndPlacePCBHeaderF1toF6File);
-  //Load the pick and place and the BOM into tables 
+
+  //Load the pick and place and the schematic BOM into tables. 
   pickNPlacetable = loadTable(pickNPlaceFile, "header");
 //  println(pickNPlacetable.getRowCount() + " total rows in Pick and Place");
+  //CAUTION: The Schematic BOM must manualy be prepended with 'Ref  Value  PartNumber' header. 
   schematicBOMtable = loadTable(schematicBOMFile, "header");
 //  println(schematicBOMtable.getRowCount() + " total rows in BOM");
 
@@ -116,10 +123,11 @@ void setup() {
       }//Else
     }//bomRow 
   }//Print out table
+  println("Done generating My100PickandPlace file as: " + myLogFileName);
 }//Setup
 
 void draw(){
-  text("Press Left Mouse to add a row",10,10);  
+  text("Press Mouse wheel to exit when done.",10,10);  
 }//draw
 
 
