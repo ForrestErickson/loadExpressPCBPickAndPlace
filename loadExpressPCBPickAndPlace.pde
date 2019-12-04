@@ -19,6 +19,7 @@
 * 20191204 
 * Add prompt and end of file generation. Change text in draw(). Make comments more accurate.
 * Rename the file name variable. Rename the output file to include 'My100'.
+* Remove 'DNI' and 'Board Feature' items from output. Make sure your Fuducials are not called Board Feature.
 */
 
 //The tables to create
@@ -102,21 +103,30 @@ void setup() {
     
     //For Ref find the schematic part number. ie, schematicBOMFile third field of (refDes)
     // Ref  Value  PartNumber    
-    for (TableRow bomRow : schematicBOMtable.rows()){      
+    for (TableRow bomRow : schematicBOMtable.rows()){  
+      Boolean isDNI = false;
       String refBOM = bomRow.getString("Ref");
       String valBOM = bomRow.getString("Value");
       String pnBOM = bomRow.getString("PartNumber");      //ExpressPCB Schematic BOM Order# field.
-//      String[] m1 = matchAll(refBOM,refDes);
+
+      String[] isValDNI = match(valBOM, "DNI");
+      String[] isPNDNI = match(pnBOM, "DNI");
+      if( (isValDNI != null) || (isPNDNI != null)){      //Remove DNI from pick and place.
+        isDNI = true;
+      }  
+      Boolean isBoardFeatureDNI = false;
+      String[] isBoardFeature = match(pnBOM, "Board Feature");
+      if( (isBoardFeature != null)){      //Remove 'Board Feature' from pick and place.
+        isBoardFeatureDNI = true;
+      }
+            
       String[] m1 = match(refDes, refBOM);
       int refDesLength = refDes.length();
       int refBOMLength = refBOM.length();
-//      String[] m1 = match(refDes, bomRow.getString("Ref"));
-//      String[] m1 = match(bomRow.getString("Ref"), refDes);
-      if ((m1 != null) && (refDesLength == refBOMLength)){    
+      if ((m1 != null) && (refDesLength == refBOMLength) && !isDNI && !isBoardFeatureDNI){    
         PartNumBOM = pnBOM;
-        //Output format, F8 tab x, tab y, tab angle, tab group, tab mount, tab glue, tab PartNum, CR LF, F9 tab, Ref
+        //Output format: F8 tab x, tab y, tab angle, tab group, tab mount, tab glue, tab PartNum, CR LF, F9 tab, Ref
         String outText = "F8\t"+ x + "\t"+ y + "\t" + rotation + "\t" + group + "\t" + mountSkip + "\t" + glue + "\t" + PartNumBOM + "\r\nF9 " + refDes;
-//        println("F8\t"+ x + "\t"+ y + "\t" + rotation + "\t" + group + "\t" + mountSkip + "\t" + glue + "\t" + PartNumBOM + "\r\nF9 " + refDes);
         println(outText);
         appendTextToFile(my100PickNPlaceFileName, outText);
       }else {
