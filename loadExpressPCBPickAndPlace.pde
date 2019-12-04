@@ -1,11 +1,13 @@
 /** loadExpressPCBPickAndPlace
 * Lee Erickson
 * This software is designed to kill you, but is not guarenteed to do so. Use at own risk.
+*
 * 20191203 Transmongraphied from example at: https://processing.org/reference/loadTable_.html
 * Update for mouse to add row or add column or exit."
 * Update to open pick and place file from ExpressPCB for Coincidence Daughter20191125_1617
 * Updated to read first row of table. See: https://www.youtube.com/watch?v=woaR-CJEwqc at about 8:00 time.
 * Ouput for F8 and F9 lines of MY100LXE file format.
+* Reference the MyData v2.9 Software Manual especially appendix D for the My100 file data format.
 * Open the schematic BOM (parts list) which has RefDes and Part Number fields into a table.
 * Remove magic strings for file names.
 * Look up Part Number (Order#) from Schematic by RefDes in Pick and Place. 
@@ -16,7 +18,8 @@
 * 20191203
 * Eliminate duplicate C10 by test for equal lenght ref des before doing the look up. Make offset origin and flip Y direction. Not yet correct.
 * Set board height in mm. Mirror Y direction.
-* 20191204 
+* 20191204
+* This is working well. My100 preview looks good. The Cs and Rs are all 90 degress off.
 * Add prompt and end of file generation. Change text in draw(). Make comments more accurate.
 * Rename the file name variable. Rename the output file to include 'My100'.
 * Remove 'DNI' and 'Board Feature' items from output. Make sure your Fuducials are not called Board Feature.
@@ -140,13 +143,6 @@ void setup() {
 void draw(){
   text("Press Mouse wheel to exit when done.",10,10);  
 }//draw
-
-
-// Sketch prints:
-// 3 total rows in table
-// Goat (Capra hircus) has an ID of 0
-// Leopard (Panthera pardus) has an ID of 1
-// Zebra (Equus zebra) has an ID of 2
 
 /*event driven functions*/
 //Mouse press to modify table
