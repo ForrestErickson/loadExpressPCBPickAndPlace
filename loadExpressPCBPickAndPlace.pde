@@ -23,18 +23,23 @@
 * Add prompt and end of file generation. Change text in draw(). Make comments more accurate.
 * Rename the file name variable. Rename the output file to include 'My100'.
 * Remove 'DNI' and 'Board Feature' items from output. Make sure your Fuducials are not called Board Feature.
+* Add file descriptions. Remove magic number on BOARDHEIGHT. Change for Schematic BOM first field '*Ref'.
 */
 
+final float BOARDHEIGHT = 2.5;         // Magic number for board. Example the ExpressPCB MiniboardPro.
 //The tables to create
 Table pickNPlacetable;                //Open the ExpressPCB pick and place file for this PCB.
 Table schematicBOMtable;              //Open the schematicBOM file with the part number in the "order#" field for this PCB.
 
-//The files you need
+//The files you need in the data folder
+// Pick and place file emailed from ExpressPCB.
 final String pickNPlaceFile = "Pick-and-place for WUKT8747E.csv";
-//final String pickNPlaceFileFixed = "Pick-and-place for WUKT8747EFixRef.csv";  //Same as above but change C0001 to C1 and so on.
-//String pickNPlaceFile = pickNPlaceFileFixed;
-final String schematicBOMFile = "Coincidence Daughter20191125_1617.tsv"; // From Express PCB schematicBOM RefDes get Order# (Part Number), field 1 get field 3
-final String pickAndPlacelayoutPanelHeader = "My100_LAYOUT_CD.txt"; // Layout and Panel data required by My100 for project.
+
+// From Edit>Copy bill of material to clip board (of Express PCB schematic RefDes get Order# (Part Number), field 1 get field 3
+final String schematicBOMFile = "Coincidence Daughter20191125_1617.tsv"; 
+
+// Some text files with My100 programing strings. Edit these files for the assembly name and for board width and fuducial locations.
+final String pickAndPlacelayoutPanelHeader = "My100_LAYOUT_PANEL.txt"; // Layout and Panel data required by My100 for project.
 final String pickAndPlacePCBHeaderF1toF6File = "My100PCBF1toF6.txt"; // Lines required by My100 for PCB file
 
 //Fixed My100 fields
@@ -52,7 +57,7 @@ final int aFactor = 1000; // Convert  degrees to mills of degree
 //The ExpressPCB orgin is upper left of board. My100 origin is lower left
 //The xOffset is therefor zero but the My100 origin must be offset by the board height.
 final int xOffset = 0; // 
-final int yOffset = 63500; // Set for board height  2.5 inch * 25.4 * 1000
+final int yOffset = int(BOARDHEIGHT*25.4*1000); // 63500; // Set magic number for board height  2.5 inch * 25.4 * 1000
 
 
 void setup() {
@@ -65,7 +70,7 @@ void setup() {
   //Load the pick and place and the schematic BOM into tables. 
   pickNPlacetable = loadTable(pickNPlaceFile, "header");
 //  println(pickNPlacetable.getRowCount() + " total rows in Pick and Place");
-  //CAUTION: The Schematic BOM must manualy be prepended with 'Ref  Value  PartNumber' header. 
+  //CAUTION: The Schematic BOM must manualy be prepended with '*Ref  Value  PartNumber' header, or add a schematic part to do so.
   schematicBOMtable = loadTable(schematicBOMFile, "header");
 //  println(schematicBOMtable.getRowCount() + " total rows in BOM");
 
@@ -91,7 +96,7 @@ void setup() {
   //Ref,Part Name,X,Y,Rotation,Side
   for (TableRow row : pickNPlacetable.rows()) {
     String refDes = row.getString("Ref");
-//    String partName = row.getString("Part Name");    //Not used in MyData output.
+    //String partName = row.getString("Part Name");    //Not used in MyData output.
     float f_x = row.getFloat("X");
     float f_y = row.getFloat("Y");
     float f_rotation = row.getFloat("Rotation");
@@ -109,7 +114,7 @@ void setup() {
     // Ref  Value  PartNumber    
     for (TableRow bomRow : schematicBOMtable.rows()){  
       Boolean isDNI = false;
-      String refBOM = bomRow.getString("Ref");
+      String refBOM = bomRow.getString("*Ref");
       String valBOM = bomRow.getString("Value");
       String pnBOM = bomRow.getString("PartNumber");      //ExpressPCB Schematic BOM Order# field.
 
