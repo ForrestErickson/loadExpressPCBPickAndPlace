@@ -5,17 +5,17 @@
  * Can be used for big files with lots of rows, 
  * existing lines will not be rewritten
  *
- * Example usage: appendTextToFile(myLogFileName, ("Client disconnect: " + myClient.ip()));
- * General usage: appendTextToFile(myLogFileName, String);
+ * Example usage: appendTextToFile(my100PickNPlaceFileName, ("Client disconnect: " + myClient.ip()));
+ * General usage: appendTextToFile(my100PickNPlaceFileName, String);
 */
 
-//  if (Verbose) {appendTextToFile(myLogFileName, "Client connected: " + s_clientAddress );}
+//  if (Verbose) {appendTextToFile(my100PickNPlaceFileName, "Client connected: " + s_clientAddress );}
  
  /* For logging text file */
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 
-String myLogFileName = "CoincidenceDaughter.txt";
+String my100PickNPlaceFileName = "CoincidenceDaughterMy100.txt";
 
 void appendTextToFile(String filename, String text) {
   File f = new File(dataPath(filename));
@@ -35,7 +35,7 @@ void appendTextToFile(String filename, String text) {
  * Creates a new file including all subfolders
  */
 void createFile(File f){
-  println("Creating new file: " + myLogFileName);
+  println("Creating new file: " + my100PickNPlaceFileName);
   File parentDir = f.getParentFile();
   try{
     parentDir.mkdirs(); 

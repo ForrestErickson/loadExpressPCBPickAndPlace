@@ -18,6 +18,7 @@
 * Set board height in mm. Mirror Y direction.
 * 20191204 
 * Add prompt and end of file generation. Change text in draw(). Make comments more accurate.
+* Rename the file name variable. Rename the output file to include 'My100'.
 */
 
 //The tables to create
@@ -67,13 +68,13 @@ void setup() {
   /*Begin writing to file. Start with the Layout and Panel lines required for MY100 Layout and Panel*/ 
   for (int i = 0 ; i < headerLayoutPanel.length; i++) {
     println(headerLayoutPanel[i]);
-    appendTextToFile(myLogFileName, headerLayoutPanel[i]);
+    appendTextToFile(my100PickNPlaceFileName, headerLayoutPanel[i]);
   }
   
   /*Begin writing to file. Start with the lines required for MY100 PCB*/ 
   for (int i = 0 ; i < headerPCB.length; i++) {
     println(headerPCB[i]);
-    appendTextToFile(myLogFileName, headerPCB[i]);
+    appendTextToFile(my100PickNPlaceFileName, headerPCB[i]);
   }  
   println("#Let's print it out F8 abd F9 lines in MYDATA MY100 format."); 
   println("#F8 template  x  y  angle  group  mount  glue  Spectrum Techniques PN  \r\n#F9  Location(Refdes)"); 
@@ -117,13 +118,13 @@ void setup() {
         String outText = "F8\t"+ x + "\t"+ y + "\t" + rotation + "\t" + group + "\t" + mountSkip + "\t" + glue + "\t" + PartNumBOM + "\r\nF9 " + refDes;
 //        println("F8\t"+ x + "\t"+ y + "\t" + rotation + "\t" + group + "\t" + mountSkip + "\t" + glue + "\t" + PartNumBOM + "\r\nF9 " + refDes);
         println(outText);
-        appendTextToFile(myLogFileName, outText);
+        appendTextToFile(my100PickNPlaceFileName, outText);
       }else {
         PartNumBOM = "foobar";
       }//Else
     }//bomRow 
   }//Print out table
-  println("Done generating My100PickandPlace file as: " + myLogFileName);
+  println("Done generating My100PickandPlace file as: " + my100PickNPlaceFileName);
 }//Setup
 
 void draw(){
