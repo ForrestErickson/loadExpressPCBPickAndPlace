@@ -24,7 +24,22 @@
 * Rename the file name variable. Rename the output file to include 'My100'.
 * Remove 'DNI' and 'Board Feature' items from output. Make sure your Fuducials are not called Board Feature.
 * Add file descriptions. Remove magic number on BOARDHEIGHT. Change for Schematic BOM first field '*Ref'.
+* 20191206 Programaticaly create the lines currently in file: My100PCBF1toF6.txt
+* 
 */
+
+/*Project setup. The user must edit this code for each project.*/
+final String sPROJECTNAME = "Coincidence Daughter20191125_1617";
+final String sPROJECTNOTE = "As Ordered R1";
+//Fuducials. Need two. rnd-1.2mm assumed.
+final int FD1X = 2540;  // for Coincidence Daughter20191125_1617
+final int FD1Y = 60960;  // for Coincidence Daughter20191125_1617
+final int FD2X = 92710;  // for Coincidence Daughter20191125_1617
+final int FD2Y = 11430;  // for Coincidence Daughter20191125_1617
+
+  //appendTextToFile(my100PickNPlaceFileName, "F3  2540  60960  rnd-1.2mm");   //F3 first fuducial in PCB
+  //appendTextToFile(my100PickNPlaceFileName, "F3  92710  11430  rnd-1.2mm");  //F3 second fuducial in PCB
+
 
 final float BOARDHEIGHT = 2.5;         // Magic number for board. Example the ExpressPCB MiniboardPro.
 //The tables to create
@@ -40,7 +55,6 @@ final String schematicBOMFile = "Coincidence Daughter20191125_1617.tsv";
 
 // Some text files with My100 programing strings. Edit these files for the assembly name and for board width and fuducial locations.
 final String pickAndPlacelayoutPanelHeader = "My100_LAYOUT_PANEL.txt"; // Layout and Panel data required by My100 for project.
-final String pickAndPlacePCBHeaderF1toF6File = "My100PCBF1toF6.txt"; // Lines required by My100 for PCB file
 
 //Fixed My100 fields
 int group = 0;                         //Not useing Groups
@@ -64,8 +78,6 @@ void setup() {
   size(400,400);
   //Load text for Layout and Panel of Mydata PCB file.
   String[] headerLayoutPanel = loadStrings(pickAndPlacelayoutPanelHeader);  
-  //Load text for lines F1 to F6 of Mydata PCB file.
-  String[] headerPCB = loadStrings(pickAndPlacePCBHeaderF1toF6File);
 
   //Load the pick and place and the schematic BOM into tables. 
   pickNPlacetable = loadTable(pickNPlaceFile, "header");
@@ -80,18 +92,23 @@ void setup() {
     appendTextToFile(my100PickNPlaceFileName, headerLayoutPanel[i]);
   }
   
-  /*Begin writing to file. Start with the lines required for MY100 PCB*/ 
-  for (int i = 0 ; i < headerPCB.length; i++) {
-    println(headerPCB[i]);
-    appendTextToFile(my100PickNPlaceFileName, headerPCB[i]);
-  }  
-  println("#Let's print it out F8 abd F9 lines in MYDATA MY100 format."); 
-  println("#F8 template  x  y  angle  group  mount  glue  Spectrum Techniques PN  \r\n#F9  Location(Refdes)"); 
+  /* The "F" lines required for MY100 PCB*/ 
+  //F1, F2, F3 and F3, F5 and F6 lines in the PCB 
+  appendTextToFile(my100PickNPlaceFileName, "\r\n# *** PCB ***"); //A decorative comment
+  appendTextToFile(my100PickNPlaceFileName, "F1\t" + sPROJECTNAME); //F1
+  appendTextToFile(my100PickNPlaceFileName, "F2\t" + sPROJECTNOTE); //F2
+  appendTextToFile(my100PickNPlaceFileName, "F3\t" +FD1X+ "\t" +FD1Y +"\trnd-1.2mm");  //F3 first fuducial in PCB
+  appendTextToFile(my100PickNPlaceFileName, "F3\t" +FD2X+ "\t" +FD2Y +"\trnd-1.2mm");  //F3 second fuducial in PCB
+  appendTextToFile(my100PickNPlaceFileName, "F5 \t0  \t0  ");                   //F5 Glue test position
+  appendTextToFile(my100PickNPlaceFileName, "F6 \t0  \t0  ");                   //F6 Mount tool board level test postion
+  
   
   /*Write the F8 and F9 lines for placement to file. 
   *Get the pick and place by ref des from Pick and place file.
   *Get the Part Number for the ref (Reference designator) from the schematicBOM Order# field.
-  *Compose the F8 and F9 lines*/
+  *Compose the F8 and F9 lines.
+  *println("#F8 template  x  y  angle  group  mount  glue  Spectrum Techniques PN  \r\n#F9  Location(Refdes)");   
+  */
   
   //Ref,Part Name,X,Y,Rotation,Side
   for (TableRow row : pickNPlacetable.rows()) {
